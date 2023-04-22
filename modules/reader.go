@@ -27,7 +27,7 @@ type IMusicReader struct {
 
 var MusicReader = IMusicReader{
 	InitialFrame: 500,
-	UnitFrame:    10,
+	UnitFrame:    50,
 
 	Index: 0,
 	File:  nil,
