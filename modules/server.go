@@ -47,7 +47,7 @@ func FMHandle(w http.ResponseWriter, r *http.Request) {
 	for {
 		var targetBuffer []byte
 
-		MusicReader.Lock.Lock()
+		MusicReader.Lock.RLock()
 		if !init {
 			init = true
 			targetBuffer = MusicReader.InitialBuffer[:]
@@ -57,7 +57,7 @@ func FMHandle(w http.ResponseWriter, r *http.Request) {
 
 		var timeout = MusicReader.Timeout
 
-		MusicReader.Lock.Unlock()
+		MusicReader.Lock.RUnlock()
 
 		_, err := w.Write(targetBuffer)
 		if err != nil {

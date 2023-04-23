@@ -22,7 +22,7 @@ type IMusicReader struct {
 	UnitBuffer    []byte
 	Timeout       int
 
-	Lock sync.Mutex
+	Lock sync.RWMutex
 }
 
 var MusicReader = IMusicReader{
