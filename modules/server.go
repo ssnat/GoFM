@@ -44,11 +44,19 @@ func FMHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "audio/mpeg")
 
 	init := false
+	order := 0
 
 	for {
 		var targetBuffer []byte
 
 		store := MusicReader.GetStoreData()
+
+		if store.Order == order {
+			time.Sleep(time.Millisecond * 100)
+			continue
+		}
+
+		order = store.Order
 
 		if !init {
 			init = true

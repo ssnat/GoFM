@@ -39,6 +39,7 @@ type IMusicReaderStoreData struct {
 	InitialBuffer []byte
 	UnitBuffer    []byte
 	Timeout       int
+	Order         int
 }
 
 func (musicReader *IMusicReader) SelectNextMusic() {
@@ -126,6 +127,7 @@ func (musicReader *IMusicReader) SetInitialBuffer() {
 		InitialBuffer: initialBuffer,
 		UnitBuffer:    unitBuffer,
 		Timeout:       timeout,
+		Order:         1,
 	})
 }
 
@@ -154,6 +156,7 @@ func (musicReader *IMusicReader) SetUnitBuffer() {
 		InitialBuffer: initialBuffer,
 		UnitBuffer:    unitBuffer,
 		Timeout:       timeout,
+		Order:         store.Order + 1,
 	})
 }
 
