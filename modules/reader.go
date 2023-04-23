@@ -18,9 +18,8 @@ type IMusicReader struct {
 	Index int
 	File  *os.File
 
-	InitialBuffer []byte
-	UnitBuffer    []byte
-	Timeout       int
+	Store    *sync.Map
+	StoreKey string
 
 	Lock sync.RWMutex
 }
@@ -32,9 +31,14 @@ var MusicReader = IMusicReader{
 	Index: 0,
 	File:  nil,
 
-	InitialBuffer: nil,
-	UnitBuffer:    nil,
-	Timeout:       0,
+	Store:    &sync.Map{},
+	StoreKey: "Store",
+}
+
+type IMusicReaderStoreData struct {
+	InitialBuffer []byte
+	UnitBuffer    []byte
+	Timeout       int
 }
 
 func (musicReader *IMusicReader) SelectNextMusic() {
@@ -76,12 +80,28 @@ func (musicReader *IMusicReader) NoFile() bool {
 	return musicReader.File == nil
 }
 
+func (musicReader *IMusicReader) GetStoreData() *IMusicReaderStoreData {
+	store, ok := musicReader.Store.Load(musicReader.StoreKey)
+	if !ok {
+		return nil
+	}
+	data := store.(IMusicReaderStoreData)
+	return &data
+}
+
+func (musicReader *IMusicReader) SetStoreData(data IMusicReaderStoreData) {
+	musicReader.Store.Store(musicReader.StoreKey, data)
+}
+
 func (musicReader *IMusicReader) Sleep() {
-	time.Sleep(time.Millisecond * time.Duration(musicReader.Timeout))
+	store := musicReader.GetStoreData()
+	if store != nil {
+		time.Sleep(time.Millisecond * time.Duration(store.Timeout))
+	}
 }
 
 func (musicReader *IMusicReader) SetInitialBuffer() {
-	var initBuffer []byte
+	var initialBuffer []byte
 	var unitBuffer []byte
 
 	var timeout = 0
@@ -92,7 +112,7 @@ func (musicReader *IMusicReader) SetInitialBuffer() {
 			musicReader.CloseFile()
 			continue
 		}
-		initBuffer = append(initBuffer, frame.RawBytes...)
+		initialBuffer = append(initialBuffer, frame.RawBytes...)
 
 		if i >= musicReader.InitialFrame-musicReader.UnitFrame {
 
@@ -102,11 +122,11 @@ func (musicReader *IMusicReader) SetInitialBuffer() {
 		}
 	}
 
-	musicReader.Lock.Lock()
-	musicReader.InitialBuffer = initBuffer
-	musicReader.UnitBuffer = unitBuffer
-	musicReader.Timeout = timeout
-	musicReader.Lock.Unlock()
+	musicReader.SetStoreData(IMusicReaderStoreData{
+		InitialBuffer: initialBuffer,
+		UnitBuffer:    unitBuffer,
+		Timeout:       timeout,
+	})
 }
 
 func (musicReader *IMusicReader) SetUnitBuffer() {
@@ -124,15 +144,17 @@ func (musicReader *IMusicReader) SetUnitBuffer() {
 		timeout += 1000 * frame.SampleCount / frame.SamplingRate
 	}
 
-	initialBuffer := musicReader.InitialBuffer[:]
+	store := musicReader.GetStoreData()
+
+	initialBuffer := store.InitialBuffer[:]
 	initialBuffer = initialBuffer[len(unitBuffer):]
 	initialBuffer = append(initialBuffer, unitBuffer...)
 
-	musicReader.Lock.Lock()
-	musicReader.InitialBuffer = initialBuffer
-	musicReader.UnitBuffer = unitBuffer
-	musicReader.Timeout = timeout
-	musicReader.Lock.Unlock()
+	musicReader.SetStoreData(IMusicReaderStoreData{
+		InitialBuffer: initialBuffer,
+		UnitBuffer:    unitBuffer,
+		Timeout:       timeout,
+	})
 }
 
 func (musicReader *IMusicReader) StartLoop() {
@@ -140,7 +162,8 @@ func (musicReader *IMusicReader) StartLoop() {
 		if musicReader.NoFile() {
 			musicReader.SelectNextMusic()
 		}
-		if musicReader.InitialBuffer == nil {
+		store := musicReader.GetStoreData()
+		if store == nil {
 			musicReader.SetInitialBuffer()
 		} else {
 			musicReader.SetUnitBuffer()

@@ -28,7 +28,8 @@ func FMHandle(w http.ResponseWriter, r *http.Request) {
 
 	Logger.Info(fmt.Sprintf("Client %s connected", ip))
 
-	if MusicReader.InitialBuffer == nil {
+	store := MusicReader.GetStoreData()
+	if store == nil {
 		_, err := io.WriteString(w, "Oops, it seems like the FM hasn't started up.")
 		if err != nil {
 			Logger.Error(err)
@@ -47,17 +48,16 @@ func FMHandle(w http.ResponseWriter, r *http.Request) {
 	for {
 		var targetBuffer []byte
 
-		MusicReader.Lock.RLock()
+		store := MusicReader.GetStoreData()
+
 		if !init {
 			init = true
-			targetBuffer = MusicReader.InitialBuffer[:]
+			targetBuffer = store.InitialBuffer[:]
 		} else {
-			targetBuffer = MusicReader.UnitBuffer[:]
+			targetBuffer = store.UnitBuffer[:]
 		}
 
-		var timeout = MusicReader.Timeout
-
-		MusicReader.Lock.RUnlock()
+		var timeout = store.Timeout
 
 		_, err := w.Write(targetBuffer)
 		if err != nil {
