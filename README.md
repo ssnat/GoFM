@@ -38,6 +38,9 @@ For example, to change the server's port number to 8080, use the -p option follo
 ```
 ./GoFM -d /path/to/your/music/directory -p 8080
 ```
+Available Online Services
+-----
+PxGo FM: [http://fm.stackstore.net:2086](http://fm.stackstore.net:2086)
 
 License
 -----
