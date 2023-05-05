@@ -40,7 +40,7 @@ For example, to change the server's port number to 8080, use the -p option follo
 ```
 Available Online Services
 -----
-PxGo FM: [https://fm.stackstore.net:8443](https://fm.stackstore.net:8443)
+PxGo FM: [https://fm.stackstore.net](https://fm.stackstore.net)
 
 License
 -----
