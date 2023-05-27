@@ -4,3 +4,5 @@
 /web/node_modules
 /web/.next
 /web/dist
+/web/.idea
+/web/.vscode

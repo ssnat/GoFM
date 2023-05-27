@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/pxgo/GoFM/modules"
+	"github.com/pxgo/GoFM/tools"
 	"net/http"
 )
 
@@ -19,7 +20,7 @@ func GetMusicCover(ctx echo.Context) error {
 func GetMusicInfo(ctx echo.Context) error {
 
 	musicInfo := modules.MusicReader.GetMusicInfo()
-	err := ctx.JSON(http.StatusOK, musicInfo)
+	err := ctx.JSON(http.StatusOK, tools.Response.GetResponseBody(musicInfo))
 	if err != nil {
 		modules.Logger.Error(err)
 		return err
