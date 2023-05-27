@@ -1,3 +1,6 @@
 /build
 /.idea
 /.vscode
+/web/node_modules
+/web/.next
+/web/dist
