@@ -1,5 +1,11 @@
+import Head from 'next/head'
 export default function AboutPage() {
     return (
-        <div>About</div>
+        <div>
+            <Head>
+                <title>234</title>
+            </Head>
+            <span>About</span>
+        </div>
     )
 }

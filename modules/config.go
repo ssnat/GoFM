@@ -3,9 +3,11 @@ package modules
 import (
 	"flag"
 	"fmt"
+	"github.com/pxgo/GoFM/conf"
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 type IConfig struct {
@@ -14,6 +16,9 @@ type IConfig struct {
 	Directory string
 	Random    bool
 	Debug     bool
+	Name      string
+	Time      int64
+	Version   string
 }
 
 var Config *IConfig
@@ -31,7 +36,9 @@ func init() {
 	var directory string
 	var debug bool
 	var help bool
+	var name string
 
+	flag.StringVar(&name, "n", "GoFM", "server name")
 	flag.IntVar(&port, "p", 8090, "server port number")
 	flag.StringVar(&host, "host", "0.0.0.0", "server host address")
 	flag.BoolVar(&random, "r", false, "enable random playback mode")
@@ -59,6 +66,9 @@ func init() {
 		Random:    random,
 		Directory: directory,
 		Debug:     debug,
+		Time:      time.Now().UnixNano() / int64(time.Millisecond),
+		Name:      name,
+		Version:   conf.CodeVersion,
 	}
 }
 

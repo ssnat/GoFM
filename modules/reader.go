@@ -54,6 +54,7 @@ type IMusicInfo struct {
 	Artist     string `json:"artist"`
 	SampleRate string `json:"SampleRate"`
 	BitRate    string `json:"bitRate"`
+	Url        string `json:"url"`
 }
 
 var MusicReader = IMusicReader{
@@ -175,7 +176,8 @@ func (musicReader *IMusicReader) GetMusicInfoStoreData() *IMusicInfoStoreData {
 func (musicReader *IMusicReader) GetMusicInfo() *IMusicInfo {
 	info := musicReader.GetMusicInfoStoreData()
 	return &IMusicInfo{
-		Cover:      "/music/cover",
+		Cover:      "/api/fm/info/cover",
+		Url:        "/api/fm",
 		Title:      info.Title,
 		Artist:     info.Artist,
 		SampleRate: info.SampleRate,
