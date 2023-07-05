@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/bogem/id3v2/v2"
 	"github.com/dmulholl/mp3lib"
+	"github.com/pxgo/GoFM/statics"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -14,12 +15,9 @@ import (
 	"time"
 )
 
-//go:embed ..\statics\cover.png
-var DefaultCoverData []byte
-
 var DefaultCoverPicture = IPicture{
 	MimeType: "image/png",
-	Data:     DefaultCoverData,
+	Data:     statics.DefaultCoverData,
 }
 
 type IMusicReader struct {
