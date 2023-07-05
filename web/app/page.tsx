@@ -1,41 +1,24 @@
 "use client";
-import Head from 'next/head'
 import Link from 'next/link'
 import React, {useCallback, useEffect, useState} from "react";
 import {MdPauseCircle, MdPlayCircle} from 'react-icons/md'
+import {IFMInfo, IServerInfo, IWebsocketStatus} from "@/app/interface";
+import GetWebsocketUrl from "@/app/modules";
 
 type IPlayerStatus = "loading"|'playing'|'stopped';
-
-/*export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  // read route params then fetch data
-
-  // return an object
-  return {
-    title: "AAAA",
-    description: "BBB",
-  };
-}*/
 
 class Home extends React.Component<any, {
   errorMessage: string;
   runningTime: string;
   timer: null | NodeJS.Timeout;
   playerStatus: IPlayerStatus;
-  serverInfo:null | {
-    name: string;
-    version: string;
-    time: number;
-  };
-  fmInfo: null | {
-    title: string;
-    artist: string;
-    cover: string;
-    url: string;
-    sampleRate: string;
-    bitRate: string;
-  };
+  serverInfo:null | IServerInfo;
+  fmInfo: null | IFMInfo;
+  websocketStatus: IWebsocketStatus
 }>{
   audioRef = React.createRef<HTMLAudioElement>();
+  socket: WebSocket|null = null;
+  destroyWebsocket = () => {};
   constructor(props: any) {
     super(props)
     this.state = {
@@ -45,6 +28,7 @@ class Home extends React.Component<any, {
       serverInfo: null,
       fmInfo: null,
       playerStatus: 'stopped',
+      websocketStatus: 'connecting',
     }
   }
 
@@ -55,10 +39,12 @@ class Home extends React.Component<any, {
         errorMessage: err.message || err.toString()
       })
     });
+    this.initWebsocket();
   }
 
   componentWillUnmount() {
     this.clearTimer();
+    this.destroyWebsocket();
   }
 
   setPlayerStatus() {
@@ -72,7 +58,11 @@ class Home extends React.Component<any, {
   }
 
   play() {
-    if(!this.audioRef.current) return
+    if(!this.audioRef.current || !this.state.fmInfo) return
+
+    this.audioRef.current.src = '';
+    this.audioRef.current.src = this.state.fmInfo.url;
+
     this.audioRef.current.play()
       .then(() => {
         this.setState({
@@ -97,7 +87,7 @@ class Home extends React.Component<any, {
   }
 
   initInfo() {
-    return fetch('/api/info')
+    return fetch('/info')
       .then(res => res.json())
       .then(res => {
         const {name, version, time, FMInfo} = res.data;
@@ -109,7 +99,7 @@ class Home extends React.Component<any, {
             time
           },
           fmInfo: {
-            cover: cover + '?t=' + Date.now(),
+            cover,
             title,
             artist,
             sampleRate,
@@ -120,6 +110,39 @@ class Home extends React.Component<any, {
       });
   }
 
+  initWebsocket() {
+    const errorFunc = (event: any) => {
+      console.log(event);
+    };
+    const closeFunc = () => {
+      this.setState({websocketStatus: 'disconnected'});
+      this.destroyWebsocket();
+      setTimeout(() => {
+        this.initWebsocket();
+      }, 5000)
+    };
+    const openFunc = ()=> {
+      this.setState({websocketStatus: 'connected'});
+    };
+    const messageFunc =  (event: {data: string}) => {
+      this.setState({fmInfo: JSON.parse(event.data)});
+    };
+    this.socket = new WebSocket(GetWebsocketUrl());
+    this.socket.addEventListener("error", errorFunc);
+    this.socket.addEventListener("close", closeFunc);
+    this.socket.addEventListener("open", openFunc);
+    this.socket.addEventListener("message",messageFunc);
+    this.destroyWebsocket = () => {
+      if(this.socket) {
+        this.socket.removeEventListener("error", errorFunc);
+        this.socket.removeEventListener("close", closeFunc);
+        this.socket.removeEventListener("open", openFunc);
+        this.socket.removeEventListener("message",messageFunc);
+      }
+    }
+  }
+
+
   setTimerToUpdateRunningTime() {
     const timer = setTimeout(() => {
       if(this.state.serverInfo) {
@@ -129,6 +152,7 @@ class Home extends React.Component<any, {
       }
       this.setTimerToUpdateRunningTime();
     }, 1000);
+    this.setState({timer})
   }
 
   clearTimer() {
@@ -147,9 +171,8 @@ class Home extends React.Component<any, {
     } = this.state;
     return (
       <main className="flex justify-center items-center h-screen w-screen bg-gray-100">
-        <Head>
-          <title>{serverInfo? serverInfo.name: 'GoFM'}</title>
-        </Head>
+        <title>{serverInfo? serverInfo.name: 'GoFM'}</title>
+        <link rel="shortcut icon" type={'image/png'} href={this.state.fmInfo? this.state.fmInfo.cover: '/favicon.ico'} />
         {
           (() => {
             if(errorMessage) {
@@ -204,7 +227,7 @@ class Home extends React.Component<any, {
                         </div>
                       </div>
                     </div>
-                    <audio src={fmInfo?.url} ref={this.audioRef}></audio>
+                    <audio ref={this.audioRef}></audio>
                     <div className="text-center text-xs text-gray-600">
                       <Link href={"https://github.com/pxgo/GoFM"} target={"_blank"}>GoFM {serverInfo.version}</Link>
                     </div>

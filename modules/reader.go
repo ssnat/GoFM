@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -176,8 +177,8 @@ func (musicReader *IMusicReader) GetMusicInfoStoreData() *IMusicInfoStoreData {
 func (musicReader *IMusicReader) GetMusicInfo() *IMusicInfo {
 	info := musicReader.GetMusicInfoStoreData()
 	return &IMusicInfo{
-		Cover:      "/api/fm/info/cover",
-		Url:        "/api/fm",
+		Cover:      "/fm/info/cover?t=" + strconv.Itoa(int(time.Now().UnixNano()/1e6)),
+		Url:        "/fm",
 		Title:      info.Title,
 		Artist:     info.Artist,
 		SampleRate: info.SampleRate,
