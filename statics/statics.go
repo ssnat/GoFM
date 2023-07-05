@@ -2,5 +2,5 @@ package statics
 
 import _ "embed"
 
-//go:embed ..\statics\cover.png
+//go:embed cover.png
 var DefaultCoverData []byte
