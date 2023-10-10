@@ -17,7 +17,7 @@ To use GoFM, download the latest release from the [Releases page](https://github
 ./GoFM -d /path/to/your/music/directory
 ```
 
-By default, GoFM listens on port 8090 and all available network interfaces. You can customize the server's behavior using the following command-line options:
+By default, GoFM listens on port 8090. You can customize the server's behavior using the following command-line options:
 
 ```
 -p int
