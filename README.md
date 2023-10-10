@@ -3,15 +3,15 @@ GoFM
 GoFM is a cross-platform real-time audio streaming server written in Go. It allows you to stream MP3 audio files from a specified directory over HTTP and synchronize playback across multiple clients.
 
 [![Go Version](https://img.shields.io/badge/Go-v1.16-blue)](https://golang.org/dl/)
-[![Go Report Card](https://goreportcard.com/badge/github.com/PxGo/GoFM)](https://goreportcard.com/report/github.com/PxGo/GoFM)
-[![Downloads](https://img.shields.io/github/downloads/PxGo/GoFM/total)](https://github.com/PxGo/GoFM/releases)
-[![References](https://img.shields.io/github/forks/PxGo/GoFM?label=references)](https://github.com/PxGo/GoFM/network/members)
-[![License](https://img.shields.io/github/license/PxGo/GoFM)](https://github.com/PxGo/GoFM/blob/main/LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/pxgo/GoFM)](https://goreportcard.com/report/github.com/pxgo/GoFM)
+[![Downloads](https://img.shields.io/github/downloads/pxgo/GoFM/total)](https://github.com/pxgo/GoFM/releases)
+[![References](https://img.shields.io/github/forks/pxgo/GoFM?label=references)](https://github.com/pxgo/GoFM/network/members)
+[![License](https://img.shields.io/github/license/pxgo/GoFM)](https://github.com/pxgo/GoFM/blob/main/LICENSE)
 
 
 Usage
 -----
-To use GoFM, download the latest release from the [Releases page](https://github.com/PxGo/GoFM/releases) and run the server with the following command:
+To use GoFM, download the latest release from the [Releases page](https://github.com/pxgo/GoFM/releases) and run the server with the following command:
 
 ```
 ./GoFM -d /path/to/your/music/directory
@@ -32,6 +32,8 @@ By default, GoFM listens on port 8090 and all available network interfaces. You 
     Specifies the directory to play audio files from (default "/path/to/your/music/directory").
 -h
     Shows help information.
+-n string
+    Specifies the name of the FM (default "GoFM").
 ```
 
 For example, to change the server's port number to 8080, use the -p option followed by the desired port number, like this:
@@ -40,8 +42,8 @@ For example, to change the server's port number to 8080, use the -p option follo
 ```
 Available Online Services
 -----
-PxGo FM: [https://fm.stackstore.net](https://fm.stackstore.net)
+Taylor's music: [https://fm.stackstore.net](https://fm.stackstore.net)
 
 License
 -----
-GoFM is released under the [MIT License](https://github.com/PxGo/GoFM/blob/main/LICENSE). Feel free to use, modify, and distribute the software. Contributions are welcome!
+GoFM is released under the [MIT License](https://github.com/pxgo/GoFM/blob/main/LICENSE). Feel free to use, modify, and distribute the software. Contributions are welcome!
